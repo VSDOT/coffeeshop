@@ -5,19 +5,19 @@ workflows:
     name: React Native App
     max_build_duration: 120
     environment:
-    #   groups:
-    #     - git
+      groups:
+        - git
       vars:
         XCODE_WORKSPACE: "{{ ADD_WORKSPACE_NAME_HERE }}"
         XCODE_SCHEME: "{{ Coffee-Shop-App }}"
         node: latest
-    # triggering:
-    #   events:
-    #     - tag
-    #   branch_patterns:
-    #     - pattern: '*'
-    #       include: true
-    #       source: true
+    triggering:
+      events:
+        - tag
+      branch_patterns:
+        - pattern: '*'
+          include: true
+          source: true
       
     scripts:
       - npm update && npm audit fix
@@ -36,20 +36,21 @@ workflows:
           gem install fastlane
             
 
-      # - name: Publish to GitHub
-      #   script: | 
-      #     #!/usr/bin/env zsh
+      - name: Publish to GitHub
+        script: | 
+          #!/usr/bin/env zsh
 
-      #     # Publish only for tag builds
-      #     if [ -z ${CM_TAG} ]; then
-      #       echo "Not a tag build, will not publish GitHub release"
-      #       exit 0
-      #     fi
+          # Publish only for tag builds
+          if [ -z ${CM_TAG} ]; then
+            echo "Not a tag build, will not publish GitHub release"
+            exit 0
+          fi
 
-      #     gh release create "${CM_TAG}" \
-      #       --title "<myReactapp> ${CM_TAG}" \
-      #       --notes-file README.md \
-      #       android/app/build/outputs/**/*.apk
+          gh release create "${CM_TAG}" \
+            --title "<myReactapp> ${CM_TAG}" \
+            --notes-file README.md \
+            android/app/build/outputs/**/*.apk
+            
 
     artifacts:
       - android/app/build/outputs/**/*.apk
