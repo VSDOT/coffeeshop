@@ -11,9 +11,9 @@ workflows:
         XCODE_WORKSPACE: "{{ ADD_WORKSPACE_NAME_HERE }}"
         XCODE_SCHEME: "{{ Coffee-Shop-App }}"
         node: latest
-    triggering:
-      events:
-        - tag
+    # triggering:
+    #   events:
+    #     - tag
       branch_patterns:
         - pattern: '*'
           include: true
@@ -50,7 +50,7 @@ workflows:
             --title "<myReactapp> ${CM_TAG}" \
             --notes-file README.md \
             android/app/build/outputs/**/*.apk
-            
+
 
     artifacts:
       - android/app/build/outputs/**/*.apk
