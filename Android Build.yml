@@ -65,21 +65,21 @@ jobs:
          retention-days: 3   
 
 
-    - name: Sign AAB
-      id: sign
-      uses: r0adkll/sign-android-release@v1
-      with:
-        releaseDirectory: android/app/build/outputs/ .apk
-        signingKeyBase64: ${{ secrets.COFFEE_APP }}
-        alias: COFFEE_APP
-        keyStorePassword: codemagic 
-        keyPassword: codemagic            
+    # - name: Sign AAB
+    #   id: sign
+    #   uses: r0adkll/sign-android-release@v1
+    #   with:
+    #     releaseDirectory: android/app/build/outputs/ .apk
+    #     signingKeyBase64: ${{ secrets.COFFEE_APP }}
+    #     alias: COFFEE_APP
+    #     keyStorePassword: codemagic 
+    #     keyPassword: codemagic            
 
-    - name: Deploy to Play Store
-      uses: r0adkll/upload-google-play@v1
-      with:
-        serviceAccountJson: codemagic.json
-        packageName: Coffee-Shop-App
-        releaseFile: android/app/build/outputs/**/*.apk
-        track: beta               
+    # - name: Deploy to Play Store
+    #   uses: r0adkll/upload-google-play@v1
+    #   with:
+    #     serviceAccountJson: codemagic.json
+    #     packageName: Coffee-Shop-App
+    #     releaseFile: android/app/build/outputs/**/*.apk
+    #     track: beta               
          
