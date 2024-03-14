@@ -11,13 +11,13 @@ workflows:
         XCODE_WORKSPACE: "{{ ADD_WORKSPACE_NAME_HERE }}"
         XCODE_SCHEME: "{{ Coffee-Shop-App }}"
         node: latest
-    # triggering:
-    #   events:
-    #     - tag
-      # branch_patterns:
-      #   - pattern: '*'
-      #     include: true
-      #     source: true
+    triggering:
+      events:
+        - tag
+      branch_patterns:
+        - pattern: '*'
+          include: true
+          source: true
       
     scripts:
       - npm update && npm audit fix
@@ -29,11 +29,11 @@ workflows:
           cd android && chmod +x gradlew
           ./gradlew assembleDebug --warning-mode all
 
-      - name: Deploy to Play Store
-        script: |
-          bundle exec fastlane deploy_to_play_store
-          #Install fastlane
-          gem install fastlane
+      # - name: Deploy to Play Store
+      #   script: |
+      #     bundle exec fastlane deploy_to_play_store
+      #     #Install fastlane
+      #     gem install fastlane
             
 
       - name: Publish to GitHub
