@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "playground-s-11-fe287824",
+  "private_key_id": "8b287e7e9497bdf2e1b9d4291318cc13753fc82b",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCFAzRTfYulGap7\nBEUHIqoK32adGozznfGY8F3e3VwBsvzmU8co/rzrHteMVxB28Y47tRjxcMSkyTVQ\n9Epionv9FSaA7e0JDYluOlkC1ma+1hxTuC1uawhsWsBtmSSMDxT1Z03ACpGhc5k2\nS+Z/SRGSFwG+jV5VmJa4GRXSzh9McpzGrbKkdfH6pJ3BsuSKOtJtA+HYazAknDNt\ne2UXtEe52Naw6i6ZJbSTOnKhFKiFD8zDlIWTxAUeIpKz2UX75mqBXA0u7N43csF5\nqW2r4tOVupyrQIKLDigbsqMu4GgpfRHXl3xBKLrK8Wq8M0SGGRgUZxlKQDg+IObM\nIv94gDX/AgMBAAECggEAASw55Lc5fnn/Sfi2f8LF+1+PNjkQNMEClXsfu2x54wfy\nzo2+4Up8XERYLoQWqz3OUmdyh1pxBBTuvpPQ02rPALhphP8pX7LksHnyOUyuTjtx\nYimVuPYCS9ZHARBgb/MIF8Z9OywSBE7nyGtF5n8R7mxRLHQZo1PmQaGdqCSqG6Xv\nITzJDaO0OsC2B9FOQE5dAy6Y/wK0MZDeCG2B9eaTzzI5R6g5sIIY2vZFriSJTAE7\nesrNR76xCJ/eS+czoFWObzuQglPObkgYjuLybmuKYeJ2DlLcC0IwN46XNFhxbQ8r\nwiBJjO5fL1LkFli/6LOp4io9TkxJ1LMBtN3bLgOUsQKBgQC5HPLhlBXwp8CLtdlC\nOsVz0drrdMQEThDv/4eN8sIa+Zna/rHJXWvTCkRIFIuN2xz9J50FRfeENumiULam\n/EvWCUwuS1VZkqlEt6oYrI/9b7WM8otUqv7f6pqQtdGvwy+vAqjoOnsPSQGaWARA\n0fJ+/+1SKKJ0YZaVe5ypgMt4UQKBgQC38rhmGr8FLrxw6rHztJE2o5pM4XXBnKCP\nIail3EWFFsVOmKtuSS9+ROY6UHt4fr1bvrGw8XBNhNae0o8mxcffNrcCTkwWgrxE\nbSdu+Uf+8NnkU104wEehzCrb7yJ2ddbhoSaLN19sSdv9n4x0jSGv0xLb7/RlIabc\ne8REJ/SFTwKBgQCCIg+89VXXMJbzoItzO83DdivoitWiER9nGMQ6zgYW4JGAmrxx\nSvOaEQWfhpH0z6y5aze/lUhD8jacnRFKouLNPQwJH3yI08mbPWKepfEzwWxoAbph\nczRqRYsTYD5gyV6kMcJ8P2BzhmdSEb4rs2w+S7ySnW5XUqOBwryHjLt9gQKBgEb4\nMWbLaOmR94hFNHUHNIN1KYIB9pHFYTj3zn53dqb7exJw2qtJNzarVHwpMwnxNBOi\nhiHzdNWjq75JFIvsAMpA7OjJ1pdUx1hLGMy7Bqj4ucha1Xugy8JD6EFEiPJVUpto\ntls9+OXptSOsG9+X1+hjMkKC2LLwAdXNNpLpK3EHAoGBAJ5uBUOG7P2qba8PfI22\nrEaMSOEXlGpaHnNc5JikiubGr5HgvTsE0oPgAdCt6WFQJeBc19vZQuBWb+Ly6+9V\nHaYfevtCG9cY74Qyma/VprkLW+BstMYtpamEKuXR08k89WZDA8tgyGnEbvZSxP3/\nFI7+xiWbXmYqddFlOv17Hnqx\n-----END PRIVATE KEY-----\n",
+  "client_email": "myreactapp@playground-s-11-fe287824.iam.gserviceaccount.com",
+  "client_id": "117357364079856915081",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/myreactapp%40playground-s-11-fe287824.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
