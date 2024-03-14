@@ -11,10 +11,6 @@ workflows:
         XCODE_WORKSPACE: "{{ ADD_WORKSPACE_NAME_HERE }}"
         XCODE_SCHEME: "{{ Coffee-Shop-App }}"
         node: latest
-        # AWS_ACCESS_KEY_ID: "AKIAU3U7QCLJXKWAGAP6"
-        # AWS_SECRET_ACCESS_KEY: "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"
-        # AWS_DEFAULT_REGION: "us-east-1"
-        # S3_BUCKET_NAME: "my-s3-reactapp012"
     # triggering:
     #   events:
     #     - tag
