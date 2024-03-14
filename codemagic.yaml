@@ -14,10 +14,10 @@ workflows:
     # triggering:
     #   events:
     #     - tag
-      branch_patterns:
-        - pattern: '*'
-          include: true
-          source: true
+      # branch_patterns:
+      #   - pattern: '*'
+      #     include: true
+      #     source: true
       
     scripts:
       - npm update && npm audit fix
