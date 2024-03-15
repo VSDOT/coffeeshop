@@ -63,7 +63,7 @@ workflows:
       vars:
         BUNDLE_ID: "io.codemagic.sample.reactnative"
         XCODE_WORKSPACE: "Coffee_Shop_App.xcworkspace" # <-- Put the name of your Xcode workspace here
-        XCODE_SCHEME: "Coffee_Shop_App" # <-- Put the name of your Xcode scheme here
+        XCODE_SCHEME: "Coffee_Shop_App" 
         APP_STORE_APPLE_ID: 1555555551
 
     scripts:    
@@ -73,7 +73,9 @@ workflows:
           npm install @babel/plugin-transform-object-rest-spread
           npm install expo
           npm install uglify-js
-          
+      - name: Set android.package
+        script: |
+          echo '{ "expo": { "android": { "package": "com.example.coffeeshop" } } }' > app.json
       - name: Run Expo Prebuild
         script: | 
           npx expo prebuild
@@ -82,6 +84,7 @@ workflows:
           PLIST=$CM_BUILD_DIR/$XCODE_SCHEME/Info.plist
           PLIST_BUDDY=/usr/libexec/PlistBuddy
           $PLIST_BUDDY -c "Add :ITSAppUsesNonExemptEncryption bool false" $PLIST
+
       - name: Install CocoaPods dependencies
         script: | 
           cd ios && pod install
