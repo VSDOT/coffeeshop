@@ -51,8 +51,8 @@ workflows:
             android/app/build/outputs/**/*.apk
 
 
-    artifacts:
-      - android/app/build/outputs/**/*.apk
+    # artifacts:
+    #   - android/app/build/outputs/**/*.apk
 
 #ios build 
 
@@ -61,7 +61,7 @@ workflows:
     max_build_duration: 120
     environment:
       vars:
-        BUNDLE_ID: "io.codemagic.sample.reactnative"
+        BUNDLE_ID: "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)"
         XCODE_WORKSPACE: "Coffee_Shop_App.xcworkspace" # <-- Put the name of your Xcode workspace here
         XCODE_SCHEME: "Coffee_Shop_App" 
         APP_STORE_APPLE_ID: 1555555551
@@ -109,6 +109,7 @@ workflows:
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
+      - android/app/build/outputs/**/*.apk
       - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
       - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
 
