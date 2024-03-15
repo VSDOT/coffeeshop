@@ -1,14 +1,10 @@
 workflows:
-  react-native:
-    name: React Native App
+  react-native-android:
+    name: React Native Android Build
     max_build_duration: 120
     environment:
       groups:
         - git
-      # vars:
-      #   XCODE_WORKSPACE: "{{ ADD_WORKSPACE_NAME_HERE }}"
-      #   XCODE_SCHEME: "{{ Coffee-Shop-App }}"
-      #   node: latest
     triggering:
       events:
         - tag
@@ -19,99 +15,194 @@ workflows:
           source: true
       
     scripts:
-      - npm update && npm audit fix
-      - npm install uglify-js
-      - npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res
-      - echo "sdk.dir=$HOME/programs/android-sdk-macosx"> "$FCI_BUILD_DIR/android/local.properties"
-      - | 
-          # build Android
-          cd android && chmod +x gradlew
-          ./gradlew assembleDebug --warning-mode all
+      - name: Install npm dependencies and bundle React Native for Android
+        script:
+          - npm update && npm audit fix
+          - npm install uglify-js
+          - npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res
+          - echo "sdk.dir=$HOME/programs/android-sdk-macosx"> "$FCI_BUILD_DIR/android/local.properties"
+          - cd android && chmod +x gradlew
+          - ./gradlew assembleDebug --warning-mode all
 
-      # - name: Deploy to Play Store
-      #   script: |
-      #     bundle exec fastlane deploy_to_play_store
-      #     #Install fastlane
-      #     gem install fastlane
-            
+      - name: Publish Android APK to GitHub
+        script:
+          - |
+            # Publish only for tag builds
+            if [ -z "${CM_TAG}" ]; then
+              echo "Not a tag build, will not publish GitHub release"
+              exit 0
+            fi
 
-      - name: Publish to GitHub
-        script: | 
-          #!/usr/bin/env zsh
+            gh release create "${CM_TAG}" \
+              --title "<reactapp> ${CM_TAG}" \
+              --notes-file README.md \
+              android/app/build/outputs/**/*.apk
 
-          # Publish only for tag builds
-          if [ -z ${CM_TAG} ]; then
-            echo "Not a tag build, will not publish GitHub release"
-            exit 0
-          fi
+    artifacts:
+      - android/app/build/outputs/**/*.apk
 
-          gh release create "${CM_TAG}" \
-            --title "<reactapp> ${CM_TAG}" \
-            --notes-file README.md \
-            android/app/build/outputs/**/*.apk
-
-
-    # artifacts:
-    #   - android/app/build/outputs/**/*.apk
-
-#ios build 
-
-  react-native:
-    name: React Native App
+  react-native-ios:
+    name: React Native iOS Build
     max_build_duration: 120
     environment:
       vars:
         BUNDLE_ID: "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)"
-        XCODE_WORKSPACE: "Coffee_Shop_App.xcworkspace" # <-- Put the name of your Xcode workspace here
+        XCODE_WORKSPACE: "Coffee_Shop_App.xcworkspace"
         XCODE_SCHEME: "Coffee_Shop_App" 
         APP_STORE_APPLE_ID: 1555555551
 
-    scripts:    
-      - name: Install npm dependencies
-        script: | 
-          npm update && npm audit fix
-          npm install @babel/plugin-transform-object-rest-spread
-          npm install expo
-          npm install uglify-js
+    scripts:
+      - name: Install npm dependencies and set up iOS project
+        script:
+          - npm update && npm audit fix
+          - npm install @babel/plugin-transform-object-rest-spread
+          - npm install expo
+          - npm install uglify-js
+          - echo '{ "expo": { "android": { "package": "com.example.coffeeshop" } } }' > app.json
+          - cd ios && pod install
+          - xcode-project use-profiles
+          - |
+            PLIST=$CM_BUILD_DIR/$XCODE_SCHEME/Info.plist
+            PLIST_BUDDY=/usr/libexec/PlistBuddy
+            $PLIST_BUDDY -c "Add :ITSAppUsesNonExemptEncryption bool false" $PLIST
 
-      - name: Set android.package
-        script: |
-          echo '{ "expo": { "android": { "package": "com.example.coffeeshop" } } }' > app.json
+      - name: Increment iOS build number
+        script:
+          - cd $CM_BUILD_DIR/ios
+          - LATEST_BUILD_NUMBER=$(app-store-connect get-latest-app-store-build-number "$APP_STORE_APPLE_ID")
+          - agvtool new-version -all $(($LATEST_BUILD_NUMBER + 1))
 
-      # - name: Run Expo Prebuild
-      #   script: | 
-      #     npx expo prebuild
-      - name: Set Info.plist values
-        script: | 
-          PLIST=$CM_BUILD_DIR/$XCODE_SCHEME/Info.plist
-          PLIST_BUDDY=/usr/libexec/PlistBuddy
-          $PLIST_BUDDY -c "Add :ITSAppUsesNonExemptEncryption bool false" $PLIST
-
-      - name: Install CocoaPods dependencies
-        script: | 
-          cd ios && pod install
-
-      - name: Set up provisioning profiles settings on Xcode project
-        script: xcode-project use-profiles
-
-      - name: Increment build number
-        script: | 
-          cd $CM_BUILD_DIR/ios
-          LATEST_BUILD_NUMBER=$(app-store-connect get-latest-app-store-build-number "$APP_STORE_APPLE_ID")
-          agvtool new-version -all $(($LATEST_BUILD_NUMBER + 1))
-
-      - name: Build ipa for distribution
-        script: | 
-          xcode-project build-ipa \
-            --workspace "$CM_BUILD_DIR/ios/$XCODE_WORKSPACE" \
-            --scheme "$XCODE_SCHEME"
+      - name: Build IPA for distribution
+        script:
+          - xcode-project build-ipa --workspace "$CM_BUILD_DIR/ios/$XCODE_WORKSPACE" --scheme "$XCODE_SCHEME"
 
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
-      - android/app/build/outputs/**/*.apk
       - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
       - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+
+
+
+
+
+
+
+
+# workflows:
+#   react-native:
+#     name: React Native App
+#     max_build_duration: 120
+#     environment:
+#       groups:
+#         - git
+#       # vars:
+#       #   XCODE_WORKSPACE: "{{ ADD_WORKSPACE_NAME_HERE }}"
+#       #   XCODE_SCHEME: "{{ Coffee-Shop-App }}"
+#       #   node: latest
+#     triggering:
+#       events:
+#         - tag
+
+#       branch_patterns:
+#         - pattern: master
+#           include: true
+#           source: true
+      
+#     scripts:
+#       - npm update && npm audit fix
+#       - npm install uglify-js
+#       - npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res
+#       - echo "sdk.dir=$HOME/programs/android-sdk-macosx"> "$FCI_BUILD_DIR/android/local.properties"
+#       - | 
+#           # build Android
+#           cd android && chmod +x gradlew
+#           ./gradlew assembleDebug --warning-mode all
+
+#       # - name: Deploy to Play Store
+#       #   script: |
+#       #     bundle exec fastlane deploy_to_play_store
+#       #     #Install fastlane
+#       #     gem install fastlane
+            
+
+#       - name: Publish to GitHub
+#         script: | 
+#           #!/usr/bin/env zsh
+
+#           # Publish only for tag builds
+#           if [ -z ${CM_TAG} ]; then
+#             echo "Not a tag build, will not publish GitHub release"
+#             exit 0
+#           fi
+
+#           gh release create "${CM_TAG}" \
+#             --title "<reactapp> ${CM_TAG}" \
+#             --notes-file README.md \
+#             android/app/build/outputs/**/*.apk
+
+
+#     # artifacts:
+#     #   - android/app/build/outputs/**/*.apk
+
+# #ios build 
+
+#   react-native:
+#     name: React Native App
+#     max_build_duration: 120
+#     environment:
+#       vars:
+#         BUNDLE_ID: "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)"
+#         XCODE_WORKSPACE: "Coffee_Shop_App.xcworkspace" # <-- Put the name of your Xcode workspace here
+#         XCODE_SCHEME: "Coffee_Shop_App" 
+#         APP_STORE_APPLE_ID: 1555555551
+
+#     scripts:    
+#       - name: Install npm dependencies
+#         script: | 
+#           npm update && npm audit fix
+#           npm install @babel/plugin-transform-object-rest-spread
+#           npm install expo
+#           npm install uglify-js
+
+#       - name: Set android.package
+#         script: |
+#           echo '{ "expo": { "android": { "package": "com.example.coffeeshop" } } }' > app.json
+
+#       # - name: Run Expo Prebuild
+#       #   script: | 
+#       #     npx expo prebuild
+#       - name: Set Info.plist values
+#         script: | 
+#           PLIST=$CM_BUILD_DIR/$XCODE_SCHEME/Info.plist
+#           PLIST_BUDDY=/usr/libexec/PlistBuddy
+#           $PLIST_BUDDY -c "Add :ITSAppUsesNonExemptEncryption bool false" $PLIST
+
+#       - name: Install CocoaPods dependencies
+#         script: | 
+#           cd ios && pod install
+
+#       - name: Set up provisioning profiles settings on Xcode project
+#         script: xcode-project use-profiles
+
+#       - name: Increment build number
+#         script: | 
+#           cd $CM_BUILD_DIR/ios
+#           LATEST_BUILD_NUMBER=$(app-store-connect get-latest-app-store-build-number "$APP_STORE_APPLE_ID")
+#           agvtool new-version -all $(($LATEST_BUILD_NUMBER + 1))
+
+#       - name: Build ipa for distribution
+#         script: | 
+#           xcode-project build-ipa \
+#             --workspace "$CM_BUILD_DIR/ios/$XCODE_WORKSPACE" \
+#             --scheme "$XCODE_SCHEME"
+
+#     artifacts:
+#       - build/ios/ipa/*.ipa
+#       - /tmp/xcodebuild_logs/*.log
+#       - android/app/build/outputs/**/*.apk
+#       - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
+#       - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
 
 
 
@@ -256,41 +347,3 @@ workflows:
 
 
 
-
-# workflows:
-#   react_native_workflow:
-#     name: React Native Build and Test
-#     max_build_duration: 120
-#     environment:
-#       flutter: stable
-#     scripts:
-#       - name: Install dependencies
-#         script: npm install
-
-#       - name: Build iOS
-#         script: |
-#           cd ios/
-#           pod install
-#           xcodebuild clean -workspace Coffee-Shop-App.xcworkspace -scheme Coffee-Shop-App -configuration Release
-#           xcodebuild archive -workspace Coffee-Shop-App.xcworkspace -Coffee-Shop-App -configuration Release -archivePath build/CCoffee-Shop-App.xcarchive
-#           xcodebuild -exportArchive -archivePath build/rCoffee-Shop-App.xcarchive -exportOptionsPlist exportOptions.plist -exportPath build/Coffee-Shop-App/ios
-#           npx react-native run-ios --configuration=release
-#       - name: Set Android SDK location
-#         script: |
-#           echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/android/local.properties" 
-#       - name: Build Android
-#         script: |
-#           cd android && chmod +x gradlew && ./gradlew assembleRelease
-#           cd .. && npx Coffee-Shop-App bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/ --assets-dest android/app/src/main/res/
-          
-#           cd android && ./gradlew assembleRelease
-#           npx Coffee-Shop-App run-android --variant=release
-
-#      artifacts:
-#       - ios/build/*.ipa
-#       - android/app/build/outputs/**/*.apk
-
-#     publishing:
-#       email:
-#         recipients:
-#           - manimv1268@gmail.com        
