@@ -1,57 +1,58 @@
-workflows:
-  react-native:
-    name: React Native App
-    max_build_duration: 120
-    environment:
-      groups:
-        - git
-      vars:
-        XCODE_WORKSPACE: "{{ ADD_WORKSPACE_NAME_HERE }}"
-        XCODE_SCHEME: "{{ Coffee-Shop-App }}"
-        node: latest
-    triggering:
-      events:
-        - tag
-      # branch_patterns:
-      #   - pattern: '*'
-      #     include: true
-      #     source: true
-      
-    scripts:
-      - npm update && npm audit fix
-      - npm install uglify-js
-      - npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res
-      - echo "sdk.dir=$HOME/programs/android-sdk-macosx"> "$FCI_BUILD_DIR/android/local.properties"
-      - | 
-          # build Android
-          cd android && chmod +x gradlew
-          ./gradlew assembleDebug --warning-mode all
+# workflows:
+#   react-native:
+#     name: React Native App
+#     max_build_duration: 120
+#     environment:
+#       groups:
+#         - git
+#       # vars:
+#       #   XCODE_WORKSPACE: "{{ ADD_WORKSPACE_NAME_HERE }}"
+#       #   XCODE_SCHEME: "{{ Coffee-Shop-App }}"
+#       #   node: latest
+#     triggering:
+#       events:
+#         - tag
 
-      # - name: Deploy to Play Store
-      #   script: |
-      #     bundle exec fastlane deploy_to_play_store
-      #     #Install fastlane
-      #     gem install fastlane
+#       # branch_patterns:
+#       #   - pattern: '*'
+#       #     include: true
+#       #     source: true
+      
+#     scripts:
+#       - npm update && npm audit fix
+#       - npm install uglify-js
+#       - npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res
+#       - echo "sdk.dir=$HOME/programs/android-sdk-macosx"> "$FCI_BUILD_DIR/android/local.properties"
+#       - | 
+#           # build Android
+#           cd android && chmod +x gradlew
+#           ./gradlew assembleDebug --warning-mode all
+
+#       # - name: Deploy to Play Store
+#       #   script: |
+#       #     bundle exec fastlane deploy_to_play_store
+#       #     #Install fastlane
+#       #     gem install fastlane
             
 
-      - name: Publish to GitHub
-        script: | 
-          #!/usr/bin/env zsh
+#       - name: Publish to GitHub
+#         script: | 
+#           #!/usr/bin/env zsh
 
-          # Publish only for tag builds
-          if [ -z ${CM_TAG} ]; then
-            echo "Not a tag build, will not publish GitHub release"
-            exit 0
-          fi
+#           # Publish only for tag builds
+#           if [ -z ${CM_TAG} ]; then
+#             echo "Not a tag build, will not publish GitHub release"
+#             exit 0
+#           fi
 
-          gh release create "${CM_TAG}" \
-            --title "<reactapp> ${CM_TAG}" \
-            --notes-file README.md \
-            android/app/build/outputs/**/*.apk
+#           gh release create "${CM_TAG}" \
+#             --title "<reactapp> ${CM_TAG}" \
+#             --notes-file README.md \
+#             android/app/build/outputs/**/*.apk
 
 
-    artifacts:
-      - android/app/build/outputs/**/*.apk
+#     artifacts:
+#       - android/app/build/outputs/**/*.apk
 
 #ios build 
 workflows:
@@ -83,7 +84,7 @@ workflows:
 
       - name: Set up provisioning profiles settings on Xcode project
         script: xcode-project use-profiles
-        
+
       - name: Increment build number
         script: | 
           cd $CM_BUILD_DIR/ios
