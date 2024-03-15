@@ -70,7 +70,10 @@ workflows:
       - name: Install npm dependencies
         script: | 
           npm update && npm audit fix
+          npm install @babel/plugin-transform-object-rest-spread
+          npm install expo
           npm install uglify-js
+          
       - name: Run Expo Prebuild
         script: | 
           npx expo prebuild
