@@ -69,7 +69,8 @@ workflows:
     scripts:    
       - name: Install npm dependencies
         script: | 
-          npm install
+          npm update && npm audit fix
+          npm install uglify-js
       - name: Run Expo Prebuild
         script: | 
           npx expo prebuild
